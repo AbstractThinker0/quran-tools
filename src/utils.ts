@@ -1,3 +1,4 @@
+import { validArabicLetters } from "./consts";
 import { IMatch, verseProps } from "./types";
 
 export function normalizeAlif(
@@ -19,45 +20,6 @@ export function normalizeAlif(
 export function onlySpaces(str: string) {
   return str.trim().length === 0;
 }
-
-const validArabicLetters = [
-  "ا",
-  "أ",
-  "إ",
-  "آ",
-  "ب",
-  "ت",
-  "ث",
-  "ج",
-  "ح",
-  "خ",
-  "د",
-  "ذ",
-  "ر",
-  "ز",
-  "س",
-  "ش",
-  "ص",
-  "ض",
-  "ط",
-  "ظ",
-  "ع",
-  "غ",
-  "ف",
-  "ق",
-  "ك",
-  "ل",
-  "م",
-  "ن",
-  "ه",
-  "و",
-  "ي",
-  "ى",
-  "ة",
-  "ء",
-  "ؤ",
-  "ئ",
-];
 
 export function removeDiacritics(input: string): string {
   return input.replace(/[\u064B-\u0652\u0670\u0640]/g, "");

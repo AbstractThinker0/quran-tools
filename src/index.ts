@@ -314,3 +314,5 @@ class quranClass {
 export { quranClass };
 
 export * from "./utils";
+
+export * from "./consts";
