@@ -23,6 +23,12 @@ interface ISearchOptions {
   searchStart: boolean;
 }
 
+interface ISearchRootOptions {
+  normalizeToken: boolean;
+  normalizeRoot: boolean;
+  searchInclusive: boolean;
+}
+
 class quranClass {
   chapterNames: chapterProps[] = [];
   allQuranText: quranProps[] = [];
@@ -296,18 +302,39 @@ class quranClass {
     }
   };
 
-  searchRoots = (searchString: string, searchInclusive: boolean) => {
-    const normalizedToken = normalizeAlif(searchString, true);
+  searchRoots = (searchString: string, searchOptions?: ISearchRootOptions) => {
+    if (onlySpaces(searchString)) return this.quranRoots;
 
-    return this.quranRoots.filter((root) => {
-      const normalizedRoot = normalizeAlif(root.name, true);
+    const { normalizeToken, normalizeRoot, searchInclusive } =
+      searchOptions || {};
+
+    const processedToken = normalizeToken
+      ? normalizeAlif(searchString, true)
+      : searchString;
+
+    return this.quranRoots.filter(({ name }) => {
+      const processedRoot = normalizeRoot ? normalizeAlif(name, true) : name;
 
       return (
-        normalizedRoot.startsWith(normalizedToken) ||
-        !searchString ||
-        (searchInclusive && hasAllLetters(normalizedRoot, normalizedToken))
+        processedRoot.startsWith(processedToken) ||
+        (normalizeRoot && name.startsWith(processedToken)) ||
+        (searchInclusive && hasAllLetters(processedRoot, processedToken))
       );
     });
+  };
+
+  getWordRoots = (verseRank: number, wordIndex: number) => {
+    return this.quranRoots.filter((root) =>
+      root.occurences.find((occ) => {
+        const rootData = occ.split(":");
+
+        if (rootData[0] !== verseRank.toString()) return false;
+
+        const wordIndexes = rootData[1]!.split(",");
+
+        return wordIndexes.includes(wordIndex.toString());
+      })
+    );
   };
 }
 
