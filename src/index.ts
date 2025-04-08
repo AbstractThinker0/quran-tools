@@ -6,6 +6,7 @@ import {
   getWordMatches,
   getDerivationsInVerse,
   hasAllLetters,
+  getRootMatches,
 } from "./utils";
 
 import {
@@ -335,6 +336,64 @@ class quranClass {
         return wordIndexes.includes(wordIndex.toString());
       })
     );
+  };
+
+  // 0:1
+  hasConjunction = (verseRank: number, wordIndex: number) => {
+    const conjunctions = this.quranRoots.find(
+      (root) => root.name === "و"
+    )!.occurences;
+
+    const test = conjunctions.findIndex((occ) => {
+      const rootData = occ.split(":");
+
+      if (rootData[0] !== verseRank.toString()) return false;
+
+      const wordIndexes = rootData[1]!.split(",");
+
+      return wordIndexes.includes(wordIndex.toString());
+    });
+
+    return test != -1;
+  };
+
+  // convert root occurences into derivations and verses
+  getOccurencesData = (rootOccurences: string[]) => {
+    const localDer: searchIndexProps[] = [];
+    const localVerses: verseMatchResult[] = [];
+
+    rootOccurences.forEach((occ) => {
+      const occData = occ.split(":");
+      const verse = this.getVerseByRank(occData[0]!);
+
+      if (!verse) {
+        throw new Error(`Couldn't retrieve verse by rank: ${occData[0]}`);
+      }
+
+      const wordIndexes = occData[1]!.split(",");
+      const verseWords = verse.versetext.split(" ");
+
+      const chapterName = this.getChapterName(verse.suraid);
+      const verseDerivations = wordIndexes.map((wordIndex) => ({
+        name: verseWords[Number(wordIndex) - 1]!,
+        key: verse.key,
+        text: `${chapterName}:${verse.verseid}`,
+        wordIndex,
+      }));
+
+      localDer.push(...verseDerivations);
+
+      const verseParts = getRootMatches(verseWords, wordIndexes);
+
+      localVerses.push({
+        verseParts,
+        key: verse.key,
+        suraid: verse.suraid,
+        verseid: verse.verseid,
+      });
+    });
+
+    return { rootDerivations: localDer, rootVerses: localVerses };
   };
 }
 
