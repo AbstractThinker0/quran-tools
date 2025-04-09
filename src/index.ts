@@ -459,6 +459,8 @@ class quranClass {
 
 export { quranClass };
 
+export * from "./types";
+
 export * from "./utils";
 
 export * from "./consts";
