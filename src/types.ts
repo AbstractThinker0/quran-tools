@@ -42,3 +42,12 @@ export interface verseMatchResult {
   verseid: string;
   verseParts: IMatch[];
 }
+
+interface verseProtoType {
+  verse: verseProps;
+  wordIndexes: string[];
+}
+
+export interface versesObjectType {
+  [key: string]: verseProtoType;
+}

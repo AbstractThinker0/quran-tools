@@ -16,6 +16,7 @@ import {
   verseProps,
   verseMatchResult,
   searchIndexProps,
+  versesObjectType,
 } from "./types";
 
 interface ISearchOptions {
@@ -394,6 +395,65 @@ class quranClass {
     });
 
     return { rootDerivations: localDer, rootVerses: localVerses };
+  };
+
+  searchByRootIDs = (rootsArray: string[], sortVerses: boolean = true) => {
+    const matchVerses: verseMatchResult[] = [];
+    const versesObject: versesObjectType = {};
+
+    rootsArray.forEach((root_id) => {
+      const rootTarget = this.getRootByID(root_id);
+
+      if (!rootTarget) return;
+
+      rootTarget.occurences.forEach((item) => {
+        const info = item.split(":");
+
+        // between 0 .. 6235
+        const verseRank = info[0]!;
+
+        const currentVerse = this.getVerseByRank(verseRank)!;
+
+        const wordIndexes = info[1]!.split(",");
+
+        if (versesObject[currentVerse.key]) {
+          versesObject[currentVerse.key]!.wordIndexes = Array.from(
+            new Set([
+              ...versesObject[currentVerse.key]!.wordIndexes,
+              ...wordIndexes,
+            ])
+          );
+        } else {
+          versesObject[currentVerse.key] = {
+            verse: currentVerse,
+            wordIndexes: wordIndexes,
+          };
+        }
+      });
+    });
+
+    Object.keys(versesObject).forEach((verseKey) => {
+      const currentVerse = versesObject[verseKey]!.verse;
+      const chapterName = this.getChapterName(currentVerse.suraid);
+
+      const { verseResult } = getDerivationsInVerse(
+        versesObject[verseKey]!.wordIndexes,
+        currentVerse,
+        chapterName
+      );
+
+      matchVerses.push(verseResult);
+    });
+
+    if (!sortVerses) return matchVerses;
+
+    return matchVerses.sort((verseA, verseB) => {
+      const infoA = verseA.key.split("-");
+      const infoB = verseB.key.split("-");
+      if (Number(infoA[0]) !== Number(infoB[0]))
+        return Number(infoA[0]) - Number(infoB[0]);
+      else return Number(infoA[1]) - Number(infoB[1]);
+    });
   };
 }
 
