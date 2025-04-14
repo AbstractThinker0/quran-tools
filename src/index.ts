@@ -42,29 +42,33 @@ class quranClass {
   isRootsDataLoaded = false;
 
   async fetchData() {
-    const chapterNamesData = await fetch(
-      "https://github.com/AbstractThinker0/tadabor/raw/refs/heads/master/public/res/chapters.json"
-    );
+    try {
+      const chapterNamesData = await fetch(
+        "https://github.com/AbstractThinker0/tadabor/raw/refs/heads/master/public/res/chapters.json"
+      );
 
-    const chapterNames = await chapterNamesData.json();
+      const chapterNames = await chapterNamesData.json();
 
-    this.setChapters(chapterNames);
+      this.setChapters(chapterNames);
 
-    const quranTextData = await fetch(
-      "https://github.com/AbstractThinker0/tadabor/raw/refs/heads/master/public/res/quran_v2.json"
-    );
+      const quranTextData = await fetch(
+        "https://github.com/AbstractThinker0/tadabor/raw/refs/heads/master/public/res/quran_v2.json"
+      );
 
-    const quranText = await quranTextData.json();
+      const quranText = await quranTextData.json();
 
-    this.setQuran(quranText);
+      this.setQuran(quranText);
 
-    const quranRootsData = await fetch(
-      "https://github.com/AbstractThinker0/tadabor/raw/refs/heads/master/public/res/quranRoots-0.0.10.json"
-    );
+      const quranRootsData = await fetch(
+        "https://github.com/AbstractThinker0/quran-roots/raw/refs/heads/master/quranRoots.json"
+      );
 
-    const quranRoot = await quranRootsData.json();
+      const quranRoot = await quranRootsData.json();
 
-    this.setRoots(quranRoot);
+      this.setRoots(quranRoot);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   }
 
   private onRootsLoadedCallback: (() => void) | null = null;
@@ -281,11 +285,15 @@ class quranClass {
       occurencesArray.forEach((item) => {
         const info = item.split(":");
 
-        const currentVerse = this.getVerseByRank(info[0]!);
+        const verseRank = info[0];
+        if (!verseRank) return;
+
+        const currentVerse = this.getVerseByRank(verseRank);
+        if (!currentVerse) return;
 
         if (
           searchChapters === "all" ||
-          searchChapters.includes(currentVerse!.suraid)
+          searchChapters.includes(currentVerse.suraid)
         ) {
           const wordIndexes = info[1]!.split(",");
 
@@ -416,11 +424,15 @@ class quranClass {
         const info = item.split(":");
 
         // between 0 .. 6235
-        const verseRank = info[0]!;
+        const verseRank = info[0];
+        if (!verseRank) return;
 
-        const currentVerse = this.getVerseByRank(verseRank)!;
+        const currentVerse = this.getVerseByRank(verseRank);
+        if (!currentVerse) return;
 
-        const wordIndexes = info[1]!.split(",");
+        const wordIndexes = info[1];
+        if (!wordIndexes) return;
+        const wordIndexesArray = wordIndexes.split(",");
 
         if (versesObject[currentVerse.key]) {
           versesObject[currentVerse.key]!.wordIndexes = Array.from(
@@ -432,7 +444,7 @@ class quranClass {
         } else {
           versesObject[currentVerse.key] = {
             verse: currentVerse,
-            wordIndexes: wordIndexes,
+            wordIndexes: wordIndexesArray,
           };
         }
       });
