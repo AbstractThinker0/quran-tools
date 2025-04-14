@@ -208,8 +208,10 @@ export function getRootMatches(verseWords: string[], wordIndexes: string[]) {
       const isFirstWord = i === 0;
       const isLastWord = i === verseWords.length - 1;
 
+      const shouldPrespace = segment.length == 0 && !isFirstWord;
+
       segment +=
-        (isFirstWord ? "" : " ") + verseWords[i]! + (isLastWord ? "" : " ");
+        (shouldPrespace ? " " : "") + verseWords[i]! + (isLastWord ? "" : " ");
     }
   }
 
