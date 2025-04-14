@@ -141,7 +141,13 @@ class quranClass {
       throw new Error("getVerseByKey: Invalid key.");
     }
 
-    return this.getVerses(info[0])[Number(info[1]) - 1];
+    const verse = this.getVerses(info[0])[Number(info[1]) - 1];
+
+    if (verse === undefined) {
+      throw new Error("getVerseByKey: Invalid key (2).");
+    }
+
+    return verse;
   }
 
   getVerseTextByKey(key: string) {
