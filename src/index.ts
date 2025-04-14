@@ -31,16 +31,61 @@ interface ISearchRootOptions {
   searchInclusive: boolean;
 }
 
+/**
+ * @class quranClass
+ * @description This class contains all the methods and properties needed to interact with the Quran data.
+ */
 class quranClass {
+  /**
+   * @member chapterNames
+   * @description An array of chapter names.
+   * @type {chapterProps[]}
+   */
   chapterNames: chapterProps[] = [];
+  /**
+   * @member allQuranText
+   * @description An array of Quran text data.
+   * @type {quranProps[]}
+   */
   allQuranText: quranProps[] = [];
+  /**
+   * @member quranRoots
+   * @description An array of Quran roots data.
+   * @type {rootProps[]}
+   */
   quranRoots: rootProps[] = [];
+  /**
+   * @member absoluteQuran
+   * @description An array of all verses in the Quran.
+   * @type {verseProps[]}
+   */
   absoluteQuran: verseProps[] = [];
 
+  /**
+   * @member isChaptersDataLoaded
+   * @description A boolean indicating whether the chapter names data is loaded.
+   * @type {boolean}
+   */
   isChaptersDataLoaded = false;
+  /**
+   * @member isQuranDataLoaded
+   * @description A boolean indicating whether the Quran text data is loaded.
+   * @type {boolean}
+   */
   isQuranDataLoaded = false;
+  /**
+   * @member isRootsDataLoaded
+   * @description A boolean indicating whether the Quran roots data is loaded.
+   * @type {boolean}
+   */
   isRootsDataLoaded = false;
 
+  /**
+   * @async
+   * @function fetchData
+   * @description Fetches the Quran data from online files.
+   * @returns {Promise<void>}
+   */
   async fetchData() {
     try {
       const chapterNamesData = await fetch(
@@ -74,16 +119,31 @@ class quranClass {
   private onRootsLoadedCallback: (() => void) | null = null;
 
   // Register the onRootsLoaded event
+  /**
+   * @function onRootsLoaded
+   * @description Registers a callback function to be called when the roots data is loaded.
+   * @param {() => void} callback - The callback function to be called.
+   */
   onRootsLoaded(callback: () => void) {
     this.onRootsLoadedCallback = callback;
   }
 
+  /**
+   * @function setChapters
+   * @description Sets the chapter names data.
+   * @param {chapterProps[]} chaptersData - The chapter names data.
+   */
   setChapters(chaptersData: chapterProps[]) {
     this.chapterNames = chaptersData;
 
     this.isChaptersDataLoaded = true;
   }
 
+  /**
+   * @function setQuran
+   * @description Sets the Quran text data.
+   * @param {quranProps[]} quranData - The Quran text data.
+   */
   setQuran(quranData: quranProps[]) {
     if (!this.allQuranText.length) {
       let rank = 0;
@@ -109,6 +169,11 @@ class quranClass {
     this.isQuranDataLoaded = true;
   }
 
+  /**
+   * @function setRoots
+   * @description Sets the Quran roots data.
+   * @param {rootProps[]} rootsData - The Quran roots data.
+   */
   setRoots(rootsData: rootProps[]) {
     this.quranRoots = rootsData;
     this.isRootsDataLoaded = true;
@@ -118,6 +183,13 @@ class quranClass {
     }
   }
 
+  /**
+   * @function getChapterName
+   * @description Gets the name of a chapter by its ID.
+   * @param {string | number} suraid - The ID of the chapter.
+   * @returns {string} The name of the chapter.
+   * @throws {Error} If the chapter ID is invalid or chapter names are not loaded.
+   */
   getChapterName(suraid: string | number): string {
     const index = Number(suraid) - 1;
 
@@ -132,6 +204,13 @@ class quranClass {
     return this.chapterNames[index].name;
   }
 
+  /**
+   * @function getVerses
+   * @description Gets the verses of a chapter by its ID.
+   * @param {number | string} suraid - The ID of the chapter.
+   * @returns {verseProps[]} The verses of the chapter.
+   * @throws {Error} If the chapter ID is invalid or Quran text is not loaded.
+   */
   getVerses(suraid: number | string) {
     const index = Number(suraid) - 1;
 
@@ -146,6 +225,13 @@ class quranClass {
     return this.allQuranText[index].verses;
   }
 
+  /**
+   * @function getVerseByKey
+   * @description Gets a verse by its key.
+   * @param {string} key - The key of the verse.
+   * @returns {verseProps} The verse.
+   * @throws {Error} If the key is invalid.
+   */
   getVerseByKey(key: string) {
     const info = key.split("-");
 
@@ -162,6 +248,13 @@ class quranClass {
     return verse;
   }
 
+  /**
+   * @function getVerseTextByKey
+   * @description Gets the text of a verse by its key.
+   * @param {string} key - The key of the verse.
+   * @returns {string} The text of the verse.
+   * @throws {Error} If the key is invalid.
+   */
   getVerseTextByKey(key: string) {
     const verse = this.getVerseByKey(key);
 
@@ -172,10 +265,23 @@ class quranClass {
     return verse.versetext;
   }
 
+  /**
+   * @function getVerseByRank
+   * @description Gets a verse by its rank.
+   * @param {string | number} rank - The rank of the verse.
+   * @returns {verseProps} The verse.
+   */
   getVerseByRank(rank: string | number) {
     return this.absoluteQuran[Number(rank)];
   }
 
+  /**
+   * @function convertKeyToSuffix
+   * @description Converts a verse key to a suffix string.
+   * @param {string} key - The key of the verse.
+   * @returns {string} The suffix string.
+   * @throws {Error} If the key is invalid.
+   */
   convertKeyToSuffix(key: string): string {
     const info = key.split("-");
 
@@ -186,20 +292,46 @@ class quranClass {
     return `${this.getChapterName(info[0])}:${info[1]}`;
   }
 
+  /**
+   * @function getRootByID
+   * @description Gets a root by its ID.
+   * @param {string | number} rootID - The ID of the root.
+   * @returns {rootProps | undefined} The root.
+   */
   getRootByID = (rootID: string | number) => {
     const root = this.quranRoots.find((root) => root.id === Number(rootID));
     return root;
   };
 
+  /**
+   * @function getRootNameByID
+   * @description Gets the name of a root by its ID.
+   * @param {string | number} rootID - The ID of the root.
+   * @returns {string | undefined} The name of the root.
+   */
   getRootNameByID = (rootID: string | number) => {
     return this.getRootByID(rootID)?.name;
   };
 
+  /**
+   * @function getRootByName
+   * @description Gets a root by its name.
+   * @param {string} rootName - The name of the root.
+   * @returns {rootProps | undefined} The root.
+   */
   getRootByName = (rootName: string) => {
     const root = this.quranRoots.find((root) => root.name === rootName);
     return root;
   };
 
+  /**
+   * @function getLetterByKey
+   * @description Gets a letter by its key.
+   * @param {string} verseKey - The key of the verse.
+   * @param {string} letterKey - The key of the letter.
+   * @returns {string} The letter.
+   * @throws {Error} If the key is invalid.
+   */
   getLetterByKey = (verseKey: string, letterKey: string) => {
     const verse = this.getVerseByKey(verseKey);
 
@@ -227,6 +359,14 @@ class quranClass {
     return removeDiacritics(letterSplit);
   };
 
+  /**
+   * @function searchByWord
+   * @description Searches for a word in the Quran.
+   * @param {string} word - The word to search for.
+   * @param {string[] | "all"} searchChapters - The chapters to search in.
+   * @param {ISearchOptions} searchOptions - The search options.
+   * @returns {verseMatchResult[] | false} The verses that match the search.
+   */
   searchByWord = (
     word: string,
     searchChapters: string[] | "all",
@@ -273,6 +413,13 @@ class quranClass {
     return matchVerses;
   };
 
+  /**
+   * @function searchByRoot
+   * @description Searches for a root in the Quran.
+   * @param {string} root - The root to search for.
+   * @param {string[] | "all"} searchChapters - The chapters to search in.
+   * @returns {{ matchVerses: verseMatchResult[]; derivations: searchIndexProps[]; } | false} The verses that match the search.
+   */
   searchByRoot = (root: string, searchChapters: string[] | "all") => {
     if (onlySpaces(root)) {
       return false;
@@ -326,6 +473,13 @@ class quranClass {
     }
   };
 
+  /**
+   * @function searchRoots
+   * @description Searches for roots in the Quran.
+   * @param {string} searchString - The string to search for.
+   * @param {ISearchRootOptions} searchOptions - The search options.
+   * @returns {rootProps[]} The roots that match the search.
+   */
   searchRoots = (searchString: string, searchOptions?: ISearchRootOptions) => {
     if (onlySpaces(searchString)) return this.quranRoots;
 
@@ -347,6 +501,13 @@ class quranClass {
     });
   };
 
+  /**
+   * @function getWordRoots
+   * @description Gets the roots of a word in a verse.
+   * @param {number} verseRank - The rank of the verse.
+   * @param {number} wordIndex - The index of the word in the verse.
+   * @returns {rootProps[]} The roots of the word.
+   */
   getWordRoots = (verseRank: number, wordIndex: number) => {
     return this.quranRoots.filter((root) =>
       root.occurences.find((occ) => {
@@ -361,7 +522,13 @@ class quranClass {
     );
   };
 
-  // 0:1
+  /**
+   * @function hasConjunction
+   * @description Checks if a word in a verse has a conjunction.
+   * @param {number} verseRank - The rank of the verse.
+   * @param {number} wordIndex - The index of the word in the verse.
+   * @returns {boolean} True if the word has a conjunction, false otherwise.
+   */
   hasConjunction = (verseRank: number, wordIndex: number) => {
     const conjunctions = this.quranRoots.find(
       (root) => root.name === "و"
@@ -380,7 +547,12 @@ class quranClass {
     return test != -1;
   };
 
-  // convert root occurences into derivations and verses
+  /**
+   * @function getOccurencesData
+   * @description Converts root occurrences into derivations and verses.
+   * @param {string[]} rootOccurences - The root occurrences.
+   * @returns {{ rootDerivations: searchIndexProps[]; rootVerses: verseMatchResult[]; }} The root derivations and verses.
+   */
   getOccurencesData = (rootOccurences: string[]) => {
     const localDer: searchIndexProps[] = [];
     const localVerses: verseMatchResult[] = [];
@@ -419,6 +591,13 @@ class quranClass {
     return { rootDerivations: localDer, rootVerses: localVerses };
   };
 
+  /**
+   * @function searchByRootIDs
+   * @description Searches for verses containing any of the specified root IDs.
+   * @param {string[]} rootsArray - An array of root IDs to search for.
+   * @param {boolean} [sortVerses=true] - Whether to sort the verses by chapter and verse ID.
+   * @returns {verseMatchResult[]} An array of verses that match the search.
+   */
   searchByRootIDs = (rootsArray: string[], sortVerses: boolean = true) => {
     const matchVerses: verseMatchResult[] = [];
     const versesObject: versesObjectType = {};
