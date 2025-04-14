@@ -1,6 +1,6 @@
 import {
   removeDiacritics,
-  //splitArabicLetters,
+  splitArabicLetters,
   normalizeAlif,
   onlySpaces,
 } from "../src/utils";
@@ -26,5 +26,15 @@ describe("utils Tests", () => {
     expect(normalizeAlif("ءمر", true)).toBe("امر");
 
     expect(normalizeAlif("ءمر", false, true)).toBe("أمر");
+  });
+
+  test("splitArabicLetters", () => {
+    let letters = splitArabicLetters("شيء");
+
+    expect(letters[0]).toBe("ش");
+
+    letters = splitArabicLetters("شَيء");
+
+    expect(letters[0]).toBe("شَ");
   });
 });
