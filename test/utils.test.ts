@@ -5,7 +5,6 @@ import {
   onlySpaces,
   getWordMatches,
   hasAllLetters,
-  getRootMatches,
   getDerivationsInVerse,
 } from "../src/utils";
 
