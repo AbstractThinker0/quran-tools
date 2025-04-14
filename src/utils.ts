@@ -184,12 +184,14 @@ export function hasAllLetters(str: string, token: string) {
 }
 
 export function getRootMatches(verseWords: string[], wordIndexes: string[]) {
-  const verseParts = <IMatch[]>[];
+  const verseParts: IMatch[] = [];
   let segment = "";
 
   for (let i = 0; i < verseWords.length; i++) {
+    const isMatch = wordIndexes.includes((i + 1).toString());
+
     // this word index is a root derivative
-    if (wordIndexes.includes((i + 1).toString())) {
+    if (isMatch) {
       // If we have built a segment of non-matches push it
       if (segment) {
         verseParts.push({ text: segment, isMatch: false });
@@ -199,11 +201,15 @@ export function getRootMatches(verseWords: string[], wordIndexes: string[]) {
         verseParts.push({ text: " ", isMatch: false });
       }
 
-      // push the actual match
+      // push the actual root match
       verseParts.push({ text: verseWords[i]!, isMatch: true });
     } else {
-      // keep a space around the added words, The browser will get rid of any extra spaces ( TODO: Actually verify this behavior is consistent among different browsers other than the chromium based ones )
-      segment = segment.concat(` ${verseWords[i]} `);
+      // Add current word with leading space if it's not first, and trailing space if not last
+      const isFirstWord = i === 0;
+      const isLastWord = i === verseWords.length - 1;
+
+      segment +=
+        (isFirstWord ? "" : " ") + verseWords[i]! + (isLastWord ? "" : " ");
     }
   }
 
