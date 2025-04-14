@@ -55,3 +55,29 @@ describe("quranClass Tests", () => {
     expect(quranInstance.getLetterByKey("1-1", "0-0")).toEqual("ب");
   });
 });
+
+describe("Error Handling Tests", () => {
+  test("getChapterName should throw an error when an invalid suraid is provided", () => {
+    expect(() => quranInstance.getChapterName(999)).toThrow(
+      "getChapterName: Invalid chapter ID."
+    );
+  });
+
+  test("getVerses should throw an error when an invalid suraid is provided", () => {
+    expect(() => quranInstance.getVerses(999)).toThrow(
+      "getVerses: Invalid chapter ID."
+    );
+  });
+
+  test("getVerseByKey should throw an error when an invalid key is provided", () => {
+    expect(() => quranInstance.getVerseByKey("invalid-key")).toThrow(
+      "getVerses: Invalid chapter ID."
+    );
+  });
+
+  test("getLetterByKey should throw an error when an invalid verseKey is provided", () => {
+    expect(() => quranInstance.getLetterByKey("invalid-key", "0-0")).toThrow(
+      "getVerses: Invalid chapter ID."
+    );
+  });
+});

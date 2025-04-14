@@ -121,6 +121,10 @@ class quranClass {
   getChapterName(suraid: string | number): string {
     const index = Number(suraid) - 1;
 
+    if (isNaN(index) || index < 0 || index > 113) {
+      throw new Error("getChapterName: Invalid chapter ID.");
+    }
+
     if (this.chapterNames[index] == undefined) {
       throw new Error("getChapterName: Chapter names not loaded.");
     }
@@ -130,6 +134,10 @@ class quranClass {
 
   getVerses(suraid: number | string) {
     const index = Number(suraid) - 1;
+
+    if (isNaN(index) || index < 0 || index > 113) {
+      throw new Error("getVerses: Invalid chapter ID.");
+    }
 
     if (this.allQuranText[index] == undefined) {
       throw new Error("getVerses: Quran text not loaded.");

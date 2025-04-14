@@ -15,4 +15,15 @@ describe("searchByRootIDs Tests", () => {
 
     expect(searchResult[0]!.suraid).toEqual("6");
   });
+
+  test("searchByRootIDs should return correct value with sortVerses false", () => {
+    const searchResult = quranInstance.searchByRootIDs(["1"], false);
+
+    expect(searchResult).toBeTruthy(); // Ensure it exists
+
+    // This is here to make typescript happy
+    if (!searchResult) throw new Error("searchResult is not initialized");
+
+    expect(searchResult[0]!.suraid).toEqual("6");
+  });
 });
