@@ -105,7 +105,7 @@ class quranClass {
       this.setQuran(quranText);
 
       const quranRootsData = await fetch(
-        "https://github.com/AbstractThinker0/quran-roots/raw/refs/heads/master/quranRoots.json"
+        "https://raw.githubusercontent.com/AbstractThinker0/quran-roots/refs/heads/main/quranRoots.json"
       );
 
       const quranRoot = await quranRootsData.json();
