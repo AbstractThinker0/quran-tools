@@ -341,16 +341,16 @@ class quranClass {
 
     const verseText = verse.versetext;
     const verseWords = verseText.split(" ");
-    const letterIndexes = letterKey.split("-");
 
-    const letterWord = verseWords[Number(letterIndexes[0])];
+    const [wordIndex, letterIndex] = letterKey.split("-");
+
+    const letterWord = verseWords[Number(wordIndex)];
 
     if (letterWord == undefined) {
       throw new Error("getLetterByKey: Invalid key (word not found).");
     }
 
-    const letterSplit =
-      splitArabicLetters(letterWord)[Number(letterIndexes[1])];
+    const letterSplit = splitArabicLetters(letterWord)[Number(letterIndex)];
 
     if (letterSplit == undefined) {
       throw new Error("getLetterByKey: Invalid key (letter not found).");
@@ -438,10 +438,9 @@ class quranClass {
 
     if (searchChapters) {
       occurencesArray.forEach((item) => {
-        const info = item.split(":");
+        const [verseRank, wordIndexes] = item.split(":");
 
-        const verseRank = info[0];
-        if (!verseRank) return;
+        if (!verseRank || !wordIndexes) return;
 
         const currentVerse = this.getVerseByRank(verseRank);
         if (!currentVerse) return;
@@ -450,12 +449,12 @@ class quranClass {
           searchChapters === "all" ||
           searchChapters.includes(currentVerse.suraid)
         ) {
-          const wordIndexes = info[1]!.split(",");
+          const wordIndexesArray = wordIndexes.split(",");
 
           const chapterName = this.getChapterName(currentVerse!.suraid);
 
           const { verseDerivations, verseResult } = getDerivationsInVerse(
-            wordIndexes,
+            wordIndexesArray,
             currentVerse!,
             chapterName
           );
@@ -511,13 +510,13 @@ class quranClass {
   getWordRoots = (verseRank: number, wordIndex: number) => {
     return this.quranRoots.filter((root) =>
       root.occurences.find((occ) => {
-        const rootData = occ.split(":");
+        const [verseRankIndex, wordIndexes] = occ.split(":");
 
-        if (rootData[0] !== verseRank.toString()) return false;
+        if (verseRankIndex !== verseRank.toString()) return false;
 
-        const wordIndexes = rootData[1]!.split(",");
+        const wordIndexesArray = wordIndexes!.split(",");
 
-        return wordIndexes.includes(wordIndex.toString());
+        return wordIndexesArray.includes(wordIndex.toString());
       })
     );
   };
@@ -535,13 +534,13 @@ class quranClass {
     )!.occurences;
 
     const test = conjunctions.findIndex((occ) => {
-      const rootData = occ.split(":");
+      const [verseRankIndex, wordIndexes] = occ.split(":");
 
-      if (rootData[0] !== verseRank.toString()) return false;
+      if (verseRankIndex !== verseRank.toString()) return false;
 
-      const wordIndexes = rootData[1]!.split(",");
+      const wordIndexesArray = wordIndexes!.split(",");
 
-      return wordIndexes.includes(wordIndex.toString());
+      return wordIndexesArray.includes(wordIndex.toString());
     });
 
     return test != -1;
@@ -558,18 +557,19 @@ class quranClass {
     const localVerses: verseMatchResult[] = [];
 
     rootOccurences.forEach((occ) => {
-      const occData = occ.split(":");
-      const verse = this.getVerseByRank(occData[0]!);
+      const [verseRankIndex, wordIndexes] = occ.split(":");
+
+      const verse = this.getVerseByRank(verseRankIndex!);
 
       if (!verse) {
-        throw new Error(`Couldn't retrieve verse by rank: ${occData[0]}`);
+        throw new Error(`Couldn't retrieve verse by rank: ${verseRankIndex}`);
       }
 
-      const wordIndexes = occData[1]!.split(",");
+      const wordIndexesArray = wordIndexes!.split(",");
       const verseWords = verse.versetext.split(" ");
 
       const chapterName = this.getChapterName(verse.suraid);
-      const verseDerivations = wordIndexes.map((wordIndex) => ({
+      const verseDerivations = wordIndexesArray.map((wordIndex) => ({
         name: verseWords[Number(wordIndex) - 1]!,
         key: verse.key,
         text: `${chapterName}:${verse.verseid}`,
@@ -578,7 +578,7 @@ class quranClass {
 
       localDer.push(...verseDerivations);
 
-      const verseParts = getRootMatches(verseWords, wordIndexes);
+      const verseParts = getRootMatches(verseWords, wordIndexesArray);
 
       localVerses.push({
         verseParts,
@@ -608,16 +608,14 @@ class quranClass {
       if (!rootTarget) return;
 
       rootTarget.occurences.forEach((item) => {
-        const info = item.split(":");
+        const [verseRank, wordIndexes] = item.split(":");
 
         // between 0 .. 6235
-        const verseRank = info[0];
         if (!verseRank) return;
 
         const currentVerse = this.getVerseByRank(verseRank);
         if (!currentVerse) return;
 
-        const wordIndexes = info[1];
         if (!wordIndexes) return;
         const wordIndexesArray = wordIndexes.split(",");
 
