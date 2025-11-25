@@ -36,10 +36,7 @@ export interface searchIndexProps {
   wordIndex: string;
 }
 
-export interface verseMatchResult {
-  key: string;
-  suraid: string;
-  verseid: string;
+export interface verseMatchResult extends verseProps {
   verseParts: IMatch[];
 }
 

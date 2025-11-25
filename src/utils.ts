@@ -155,9 +155,7 @@ export function getWordMatches(
   });
 
   return {
-    key: verse.key,
-    suraid: verse.suraid,
-    verseid: verse.verseid,
+    ...verse,
     verseParts: matchParts,
   };
 }
@@ -227,7 +225,7 @@ export const getDerivationsInVerse = (
   verse: verseProps,
   chapterName: string
 ) => {
-  const { versetext, key, suraid, verseid } = verse;
+  const { versetext, key, verseid } = verse;
   const verseWords = versetext.split(" ");
 
   const verseParts = getRootMatches(verseWords, wordIndexes);
@@ -239,7 +237,7 @@ export const getDerivationsInVerse = (
     wordIndex,
   }));
 
-  const verseResult = { key, suraid, verseid, verseParts };
+  const verseResult = { ...verse, verseParts };
 
   return { verseDerivations, verseResult };
 };

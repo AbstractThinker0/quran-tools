@@ -581,10 +581,8 @@ class quranClass {
       const verseParts = getRootMatches(verseWords, wordIndexesArray);
 
       localVerses.push({
+        ...verse,
         verseParts,
-        key: verse.key,
-        suraid: verse.suraid,
-        verseid: verse.verseid,
       });
     });
 
